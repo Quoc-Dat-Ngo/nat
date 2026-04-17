@@ -5,9 +5,25 @@ import java.net.InetAddress;
 import java.util.Arrays;
 
 import natty.helper.Helper;
-import natty.internal_network.IPHeader;
-import natty.internal_network.UDPHeader;
 
+/**
+ * Represents a simplified network packet abstraction for the NAT system.
+ * This class encapsulates key fields from an IP + UDP packet, including:
+ * - Source and destination IP addresses
+ * - Source and destination ports
+ * - Payload data
+ *
+ * It provides utility methods to:
+ * 1. Parse a raw DatagramPacket into a Packet object (fromDatagram),
+ * by extracting IP header fields (bytes 12–19) and UDP header fields
+ * (ports, length, and payload).
+ * 2. Construct a DatagramPacket (toDatagram) from a Packet object by
+ * rebuilding the IP and UDP headers and attaching the payload.
+ *
+ * This abstraction allows the NAT logic to easily inspect and modify
+ * packet-level information (e.g., for address/port translation) without
+ * dealing directly with raw byte manipulation throughout the codebase.
+ */
 public class Packet {
   private String srcIP;
   private String dstIP;
@@ -59,6 +75,7 @@ public class Packet {
     this.dstPort = dstPort;
   }
 
+  // After receiving from Client, start processing bytes to retrieve info
   public static Packet fromDatagram(DatagramPacket dp) {
     byte[] packet = Arrays.copyOfRange(dp.getData(), 0, dp.getLength());
 
@@ -90,6 +107,7 @@ public class Packet {
     return new Packet(srcIP, dstIP, srcPort, dstPort, data);
   }
 
+  // Construct DatagramPacket to send to Next Hop
   public static DatagramPacket toDatagram(Packet p, InetAddress addr, int port) {
     byte[] packet = new byte[Helper.MAX_SIZE_IP_HEADER + Helper.MAX_SIZE_UDP_HEADER + p.payload.length];
 

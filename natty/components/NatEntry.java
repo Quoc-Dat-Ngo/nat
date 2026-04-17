@@ -2,6 +2,14 @@ package natty.components;
 
 import java.net.InetAddress;
 
+/**
+ * Represents a single NAT mapping entry that links an internal (private)
+ * IP/port
+ * to an external (public) IP/port, along with the corresponding client
+ * endpoint.
+ * It also tracks metadata such as last usage time (for timeout/cleanup) and an
+ * internal key for efficient lookup in mapping tables.
+ */
 public class NatEntry {
   private String internalIP;
   private int internalPort;
